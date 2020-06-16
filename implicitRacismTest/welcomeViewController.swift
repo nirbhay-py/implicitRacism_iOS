@@ -8,7 +8,7 @@
 
 import UIKit
 
-class welcomeViewController: UITabBarController {
+class welcomeViewController: UIViewController {
     @IBOutlet weak var c1: NSLayoutConstraint!
     @IBOutlet weak var c2: NSLayoutConstraint!
     override func viewDidLoad() {
