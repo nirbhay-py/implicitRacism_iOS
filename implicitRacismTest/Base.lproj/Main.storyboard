@@ -301,7 +301,7 @@
                                     <constraint firstAttribute="width" constant="40" id="N3g-Hd-6ZZ"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You will be shown a series of faces in quick succession. " textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CKd-OU-prJ">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You will be shown a series of faces and words in quick succession. " textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CKd-OU-prJ">
                                 <rect key="frame" x="80" y="180.5" width="275" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                                 <nil key="textColor"/>
@@ -472,11 +472,18 @@
                                 <color key="textColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iB3-Yq-kOE">
+                                <rect key="frame" x="100.5" y="295.5" width="174.5" height="56.5"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="47"/>
+                                <color key="textColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="wwM-LX-lFH" firstAttribute="top" secondItem="t4G-Zj-vCh" secondAttribute="bottom" constant="30" id="7Rn-0d-vlA"/>
                             <constraint firstItem="fhT-sI-q2S" firstAttribute="leading" secondItem="yWF-Su-QhS" secondAttribute="leading" constant="20" id="9aJ-DD-PQc"/>
+                            <constraint firstItem="iB3-Yq-kOE" firstAttribute="centerX" secondItem="UU9-GP-a0p" secondAttribute="centerX" id="R0l-sv-LmB"/>
                             <constraint firstItem="Zx0-tZ-7ET" firstAttribute="centerY" secondItem="bAa-Jo-SW1" secondAttribute="centerY" id="SKS-N4-0Tx"/>
                             <constraint firstItem="t4G-Zj-vCh" firstAttribute="leading" secondItem="fhT-sI-q2S" secondAttribute="trailing" constant="20" id="Sr8-Yg-ypb"/>
                             <constraint firstAttribute="trailing" secondItem="t4G-Zj-vCh" secondAttribute="trailing" constant="20" id="VoJ-wN-n7r"/>
@@ -486,6 +493,7 @@
                             <constraint firstItem="bwr-Wt-IDw" firstAttribute="centerX" secondItem="UU9-GP-a0p" secondAttribute="centerX" id="ayy-oG-7ci"/>
                             <constraint firstItem="bwr-Wt-IDw" firstAttribute="centerY" secondItem="UU9-GP-a0p" secondAttribute="centerY" id="cpZ-ee-SAM"/>
                             <constraint firstItem="bAa-Jo-SW1" firstAttribute="leading" secondItem="yWF-Su-QhS" secondAttribute="leading" constant="40" id="d3V-1h-tzF"/>
+                            <constraint firstItem="iB3-Yq-kOE" firstAttribute="centerY" secondItem="UU9-GP-a0p" secondAttribute="centerY" id="ncG-Y1-LMG"/>
                             <constraint firstItem="yWF-Su-QhS" firstAttribute="trailing" secondItem="Zx0-tZ-7ET" secondAttribute="trailing" constant="40" id="o3e-eE-S0Q"/>
                             <constraint firstItem="bAa-Jo-SW1" firstAttribute="top" secondItem="bwr-Wt-IDw" secondAttribute="bottom" constant="50" id="qFF-Dm-WVN"/>
                             <constraint firstItem="wwM-LX-lFH" firstAttribute="centerX" secondItem="UU9-GP-a0p" secondAttribute="centerX" id="vpQ-7j-oLe"/>
@@ -495,7 +503,11 @@
                     </view>
                     <navigationItem key="navigationItem" id="E7q-eN-Sl1"/>
                     <connections>
+                        <outlet property="btn1" destination="bAa-Jo-SW1" id="Ux7-RA-Xdt"/>
+                        <outlet property="btn2" destination="Zx0-tZ-7ET" id="Ykz-uh-AWV"/>
                         <outlet property="faceImg" destination="bwr-Wt-IDw" id="Rjf-Rw-6wo"/>
+                        <outlet property="prompt" destination="t4G-Zj-vCh" id="UPP-G9-TJt"/>
+                        <outlet property="wordLbl" destination="iB3-Yq-kOE" id="ZqZ-gE-nx5"/>
                         <outlet property="wrongLbl" destination="wwM-LX-lFH" id="Ncn-LP-TeR"/>
                     </connections>
                 </viewController>
