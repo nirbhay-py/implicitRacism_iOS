@@ -7,493 +7,459 @@
 //
 
 import UIKit
-
+var res:String!
 class testViewController: UIViewController {
     @IBOutlet weak var wordLbl: UILabel!
     @IBOutlet weak var wrongLbl: UILabel!
     @IBOutlet weak var faceImg: UIImageView!
     @IBOutlet weak var prompt: UILabel!
-    var tcount = 0
-    var t2count = 0
-    var t3count = 0
-    var t5count = 0
-    var t6count = 0
-    var t6Times:[Double]=[]
-    var t4count_img = 0
-    var t4count_word = 0
-    var t7count_img = 0
-    var t7count_word = 0
-    var t7Times:[Double]=[]
-    var round = 1
+    var roundCounter = 1
+    var stageCounter = 0
     @IBOutlet weak var btn1: UIButton!
     @IBOutlet weak var btn2: UIButton!
-    var images:[String]=["bf1","wf2","wf3","bm1","bm3","wf1","bf3","wm1","bm2","wm2","wm3","bf2"].shuffled()
+    var images=["bf1","wf2","wf3","bm1","bm3","wf1","bf3","wm1","bm2","wm2","wm3","bf2"]
     let posWords:[String] = ["love","cheer","friend","pleasure","excellent","glad"]
     let negWords:[String] = ["abuse","grief","poison","despise","failure","angry"]
     var words:[String]!
-    var state:Int!
     var start:Date!
+    var wordState:Int!
+    var imgCount:Int!
+    var combined:[String]=[]
+    var wordCount:Int!
     var t3Times:[Double]=[]
     var t4Times:[Double]=[]
+    var t6Times:[Double]=[]
+    var t7Times:[Double]=[]
     override func viewDidLoad() {
-        state = Int.random(in: 0...1)
+        wrongLbl.isHidden = true
         wordLbl.isHidden = true
-        super.viewDidLoad()
-        var initImg = images[tcount]
-        initImg = "faces/"+initImg+"_nc.jpg"
-        print(initImg)
-        faceImg.image = UIImage(named: initImg)
-        wrongLbl.isHidden = true
-        words = posWords + negWords
+        words = posWords+negWords
         words = words.shuffled()
+        combined = words+images
+        combined = combined.shuffled()
+        wordState = Int.random(in: 0...1)
+        images = images.shuffled()
+        setImg(img: images[stageCounter])
     }
-    @IBAction func A_pressed(_ sender: Any) {
+    @IBAction func rightPressed(_ sender: Any) {
         wrongLbl.isHidden = true
-        if(round==1){
-            wrongLbl.isHidden = true
-            print(images[tcount])
-            if(images[tcount].hasPrefix("b")){
-                print("black_corr")
-                proceed()
+        if(roundCounter==1){
+            if(images[stageCounter].hasPrefix("w")){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter:stageCounter,round:roundCounter)
             }else{
+                print("wrong")
                 wrongLbl.isHidden = false
             }
-        }else if(round==2){
-            if(posWords.contains(words[t2count])){
-                proceed2()
+        }else if(roundCounter==2){
+            if(posWords.contains(words[stageCounter])){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter: stageCounter,round:roundCounter)
             }else{
-                 wrongLbl.isHidden = false
-            }
-        }else if(round==3){
-            print("round3")
-            print(words[t3count])
-            if(self.state==0){
-                if(negWords.contains(words[t3count])){
-                    proceed3()
-                    t3Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                     wrongLbl.isHidden = false
-                }
-            }else{
-                if(images[t3count].hasPrefix("b")){
-                    proceed3()
-                    t3Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                    wrongLbl.isHidden = false
-                }
-            }
-        }else if(round==4){
-            print("round4")
-            if(self.state==0){
-                if(negWords.contains(words[t4count_word])){
-                    proceed4()
-                    t3Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                     wrongLbl.isHidden = false
-                }
-            }else{
-                if(images[t4count_img].hasPrefix("b")){
-                    proceed4()
-                    t3Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                    wrongLbl.isHidden = false
-                }
-            }
-        }else if(round==5){
-            wrongLbl.isHidden = true
-            if(images[t5count].hasPrefix("w")){
-                print("white_corr")
-                proceed5()
-            }else{
+                print("wrong")
                 wrongLbl.isHidden = false
             }
-        }else if(round==6){
-            print("round6")
-            print(words[t6count])
-            if(self.state==0){
-                if(posWords.contains(words[t6count])){
-                    proceed6()
-                    t6Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+        }
+        else if(roundCounter==3){
+            if((posWords.contains(words[stageCounter]) && self.wordState==1)||(images[stageCounter].hasPrefix("w") && self.wordState==0)){
+                print("correct")
+                stageCounter+=1
+                let now=Date()
+                t3Times.append(now.timeIntervalSince(start))
+                self.start = Date()
+                stageUp(stageCounter: stageCounter,round:roundCounter)
+            }else{
+                print("wrong")
+                wrongLbl.isHidden = false
+            }
+        }else if(roundCounter==4){
+            let item = combined[stageCounter]
+            if(words.contains(item)){
+                if(posWords.contains(item)) {
+                    print("correct")
+                    let now = Date()
+                    t4Times.append(now.timeIntervalSince(start))
+                    start = Date()
+                    stageCounter+=1
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
-                     wrongLbl.isHidden = false
+                    print("wrong")
+                    wrongLbl.isHidden = false
                 }
             }else{
-                if(images[t6count].hasPrefix("w")){
-                    proceed6()
-                    t6Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+                if(item.hasPrefix("w")){
+                    print("correct")
+                    stageCounter+=1
+                    let now = Date()
+                    t4Times.append(now.timeIntervalSince(start))
+                    print("appended")
+                    start = Date()
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
+                    print("wrong")
                     wrongLbl.isHidden = false
                 }
             }
-        }else if(round==7){
-            print("round7")
-            if(self.state==0){
-                if(posWords.contains(words[t4count_word])){
-                    proceed7()
-                    t7Times.append(start.timeIntervalSinceNow * -1)
+        }else if(roundCounter==5){
+            if(images[stageCounter].hasPrefix("b")){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter: stageCounter,round:roundCounter)
+            }else{
+                print("wrong")
+                wrongLbl.isHidden = false
+            }
+        }
+        else if(roundCounter==6){
+        if((negWords.contains(words[stageCounter]) && self.wordState==1)||(images[stageCounter].hasPrefix("b") && self.wordState==0)){
+                   print("correct")
+                   stageCounter+=1
+                    let now=Date()
+                    t6Times.append(now.timeIntervalSince(start))
                     self.start = Date()
+                   stageUp(stageCounter: stageCounter,round:roundCounter)
+               }else{
+                   print("wrong")
+                   wrongLbl.isHidden = false
+               }
+        }else if(roundCounter==7){
+            let item = combined[stageCounter]
+            if(words.contains(item)){
+                if(negWords.contains(item)) {
+                    print("correct")
+                    let now = Date()
+                    t7Times.append(now.timeIntervalSince(start))
+                    start = Date()
+                    stageCounter+=1
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
-                     wrongLbl.isHidden = false
+                    print("wrong")
+                    wrongLbl.isHidden = false
                 }
             }else{
-                if(images[t7count_img].hasPrefix("b")){
-                    proceed7()
-                    t7Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+                if(item.hasPrefix("b")){
+                    print("correct")
+                    stageCounter+=1
+                    let now = Date()
+                    t7Times.append(now.timeIntervalSince(start))
+                    print("appended")
+                    start = Date()
+
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
+                    print("wrong")
                     wrongLbl.isHidden = false
                 }
             }
         }
-        
-        
+
     }
-    @IBAction func E_pressed(_ sender: Any) {
+    @IBAction func leftPressed(_ sender: Any) {
         wrongLbl.isHidden = true
-        if(round==1){
-            print(images[tcount])
-            if(images[tcount].hasPrefix("w")){
-                print("white_corr")
-                proceed()
+        if(roundCounter==1){
+            if(images[stageCounter].hasPrefix("b")){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter: stageCounter,round:roundCounter)
             }else{
+                print("wrong")
                 wrongLbl.isHidden = false
             }
-        }else if(round==2){
-            if(negWords.contains(words[t2count])){
-                proceed2()
+        }else if(roundCounter==2){
+            if(negWords.contains(words[stageCounter])){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter: stageCounter,round:roundCounter)
             }else{
-                 wrongLbl.isHidden = false
-            }
-        }else if(round==3){
-            print("round3")
-            if(self.state==0){
-                if(posWords.contains(words[t3count])){
-                    proceed3()
-                }else{
-                     wrongLbl.isHidden = false
-                }
-            }else{
-                if(images[t3count].hasPrefix("w")){
-                    proceed3()
-                }else{
-                    wrongLbl.isHidden = false
-                }
-            }
-        }else if(round==4){
-            print("round4")
-            if(self.state==0){
-                if(posWords.contains(words[t4count_word])){
-                    proceed4()
-                    t4Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                     wrongLbl.isHidden = false
-                }
-            }else{
-                if(images[t4count_img].hasPrefix("w")){
-                    proceed4()
-                    t4Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
-                }else{
-                    wrongLbl.isHidden = false
-                }
-            }
-        }else if(round==5){
-            wrongLbl.isHidden = true
-            if(images[t5count].hasPrefix("b")){
-                print("white_corr")
-                proceed5()
-            }else{
+                print("wrong")
                 wrongLbl.isHidden = false
             }
-        }
-        else if(round==6){
-            print("round6")
-            print(words[t6count])
-            if(self.state==0){
-                if(negWords.contains(words[t6count])){
-                    proceed6()
-                    t6Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+        }else if(roundCounter==3){
+            if((negWords.contains(words[stageCounter]) && self.wordState==1)||(images[stageCounter].hasPrefix("b") && self.wordState==0)){
+                       print("correct")
+                       stageCounter+=1
+                        let now=Date()
+                        t3Times.append(now.timeIntervalSince(start))
+                        self.start = Date()
+                       stageUp(stageCounter: stageCounter,round:roundCounter)
+                   }else{
+                       print("wrong")
+                       wrongLbl.isHidden = false
+                   }
+               }
+        else if(roundCounter==4){
+            let item = combined[stageCounter]
+            if(words.contains(item)){
+                if(negWords.contains(item)) {
+                    print("correct")
+                    let now = Date()
+                    t4Times.append(now.timeIntervalSince(start))
+                    print("appended")
+                    start = Date()
+                    stageCounter+=1
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
-                     wrongLbl.isHidden = false
+                    print("wrong")
+                    wrongLbl.isHidden = false
                 }
             }else{
-                if(images[t6count].hasPrefix("b")){
-                    proceed6()
-                    t6Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+                if(item.hasPrefix("b")){
+                    print("correct")
+                    let now = Date()
+                    t4Times.append(now.timeIntervalSince(start))
+                    print("appended")
+                    start = Date()
+
+                    stageCounter+=1
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
+                    print("wrong")
                     wrongLbl.isHidden = false
                 }
             }
-        }else if(round==7){
-            print("round7")
-            if(self.state==0){
-                if(posWords.contains(words[t4count_word])){
-                    proceed7()
-                    t7Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+        }else if(roundCounter==5){
+            if(images[stageCounter].hasPrefix("w")){
+                print("correct")
+                stageCounter+=1
+                stageUp(stageCounter:stageCounter,round:roundCounter)
+            }else{
+                print("wrong")
+                wrongLbl.isHidden = false
+            }
+        }else if(roundCounter==6){
+            if((posWords.contains(words[stageCounter]) && self.wordState==1)||(images[stageCounter].hasPrefix("w") && self.wordState==0)){
+                print("correct")
+                stageCounter+=1
+                let now=Date()
+                t6Times.append(now.timeIntervalSince(start))
+                self.start = Date()
+                stageUp(stageCounter: stageCounter,round:roundCounter)
+            }else{
+                print("wrong")
+                wrongLbl.isHidden = false
+            }
+        }else if(roundCounter==7){
+            let item = combined[stageCounter]
+            if(words.contains(item)){
+                if(posWords.contains(item)) {
+                    print("correct")
+                    let now = Date()
+                    t7Times.append(now.timeIntervalSince(start))
+                    start = Date()
+                    stageCounter+=1
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
-                     wrongLbl.isHidden = false
+                    print("wrong")
+                    wrongLbl.isHidden = false
                 }
             }else{
-                if(images[t7count_img].hasPrefix("b")){
-                    proceed7()
-                    t7Times.append(start.timeIntervalSinceNow * -1)
-                    self.start = Date()
+                if(item.hasPrefix("w")){
+                    print("correct")
+                    stageCounter+=1
+                    let now = Date()
+                    t7Times.append(now.timeIntervalSince(start))
+                    print("appended")
+                    start = Date()
+                    stageUp(stageCounter: stageCounter,round:roundCounter)
                 }else{
+                    print("wrong")
                     wrongLbl.isHidden = false
                 }
             }
         }
     }
-    func proceed(){
-        tcount+=1
-        print("called")
-        if(tcount>11){
-            print("t1over")
-            self.faceImg.isHidden = true
-            wordLbl.isHidden = false
-            self.wordLbl.text = words[t2count]
-            self.prompt.text = "Press P if the word below seems positive or N if it seems negative."
-            btn1.setTitle("P", for: .normal)
-            btn2.setTitle("N", for: .normal)
-            round = 2
-            
-        }else{
-            self.faceImg.image = UIImage(named: "faces/"+images[self.tcount]+"_nc.jpg")
-        }
+    func setImg(img:String){
+        wordLbl.isHidden = true
+        faceImg.isHidden = false
+        faceImg.image = UIImage(named: String("faces/"+img+"_nc.jpg"))
     }
-    func proceed2(){
-        t2count+=1
-        if(t2count>11){
-            print("t2over")
-            let alert = UIAlertController(title: "Alert", message: "Press N/A if the word below seems negative or if the face shown below looks African-American, or P/E if the word below seems positive or if the face shown below looks European-American. You will be timed!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Start the timer!", style: UIAlertAction.Style.default, handler: { action in
-                self.start = Date()
-            }))
-            self.present(alert,animated: true)
-            self.round = 3
-            self.prompt.text = "Press N/A if the word below seems negative or if the face shown below looks African-American, or P/E if the word below seems positive or if the face shown below looks European-American"
-            btn1.setTitle("N/A", for: .normal)
-            btn2.setTitle("P/E", for: .normal)
-            if (self.state==0){
-                self.faceImg.isHidden = true
-                self.wordLbl.isHidden = false
-                self.wordLbl.text = words[t3count]
-            }else{
-                self.faceImg.isHidden = false
-                self.wordLbl.isHidden = true
-                var initImg = images[t3count]
-                initImg = "faces/"+initImg+"_nc.jpg"
-                print(initImg)
-                faceImg.image = UIImage(named: initImg)
-            }
-        }else{
-            self.wordLbl.text = words[t2count]
-        }
+    func setWord(word:String){
+        wordLbl.isHidden = false
+        faceImg.isHidden = true
+        wordLbl.text = word
     }
-    func proceed3(){
-        t3count+=1
-        state = Int.random(in: 0...1)
-        if(t3count>11){
-            print("t3over")
-            let alert = UIAlertController(title: "Alert", message: "This round is a repeat of the previous round, you will be timed!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Start the timer!", style: UIAlertAction.Style.default, handler: { action in
-                self.start = Date()
-            }))
-            self.present(alert,animated: true)
-            print(t3Times)
-            self.round = 4
-            if (self.state==0){
-                self.faceImg.isHidden = true
-                self.wordLbl.isHidden = false
-                self.wordLbl.text = words[t4count_word]
+    func stageUp(stageCounter:Int,round:Int){
+        if(round==1 && stageCounter != 11){
+            setImg(img: images[stageCounter])
+        }else if(round==1 && stageCounter==11){
+            proceed(from: 1)
+        }else if(round==2 && stageCounter != 11){
+            setWord(word: words[stageCounter])
+        }else if(round==2 && stageCounter==11){
+            proceed(from: 2)
+        }else if(round==3 && stageCounter != 10){
+            self.wordState = Int.random(in: 0...1)
+            if(wordState==0){
+                if(imgCount < 12){
+                    setImg(img: images[stageCounter])
+                    imgCount+=1
+                }else{
+                    setWord(word: words[stageCounter])
+                    wordCount+=1
+                }
             }else{
-                self.faceImg.isHidden = false
-                self.wordLbl.isHidden = true
-                var initImg = images[t4count_img]
-                initImg = "faces/"+initImg+"_nc.jpg"
-                print(initImg)
-                faceImg.image = UIImage(named: initImg)
+               if(wordCount < 12){
+                    setWord(word:words[stageCounter])
+                    wordCount+=1
+                }else{
+                    setImg(img: images[stageCounter])
+                    imgCount+=1
+                }
             }
-        }else{
-            if(state==0){
-                self.faceImg.isHidden = true
-                self.wordLbl.isHidden = false
-                self.wordLbl.text = words[t3count]
+        }else if(round==3 && stageCounter==10){
+            print(stageCounter)
+            proceed(from: 3)
+        }else if(round==4 && stageCounter != 20){
+            print(stageCounter)
+            let newItem = combined[stageCounter]
+            if(words.contains(newItem)){
+                setWord(word: newItem)
             }else{
-                self.faceImg.isHidden = false
-                self.wordLbl.isHidden = true
-                self.faceImg.image = UIImage(named: "faces/"+images[self.t3count]+"_nc.jpg")
+                setImg(img: newItem)
             }
-        }
-    }
-    func proceed4(){
-        print(t4count_word,t4count_img)
-        if(t4count_img>11||t4count_word>11){
-            print("t4over")
+        }else if(round==4 && stageCounter==20){
             print(t4Times)
-            let alert = UIAlertController(title: "Alert", message: "This round will consist of classifying faces into one of two categories, like in the first stage. Be careful, the positions of the buttons have now been swapped.", preferredStyle: .alert)
-            self.prompt.text = "Press A if the person seems African-American or E if they seem European-American"
-            self.round = 5
-            self.wordLbl.isHidden = true
-            self.faceImg.isHidden = false
+            print(t4Times.count)
+            proceed(from: 4)
+        }else if(round==5 && stageCounter != 11){
+            setImg(img: images[stageCounter])
+        }else if(round==5 && stageCounter==11){
+            proceed(from: 5)
+        }else if(round==6 && stageCounter != 10){
+            self.wordState = Int.random(in: 0...1)
+            if(wordState==0){
+                if(imgCount < 12){
+                    setImg(img: images[stageCounter])
+                    imgCount+=1
+                }else{
+                    setWord(word: words[stageCounter])
+                    wordCount+=1
+                }
+            }else{
+               if(wordCount < 12){
+                    setWord(word:words[stageCounter])
+                    wordCount+=1
+                }else{
+                    setImg(img: images[stageCounter])
+                    imgCount+=1
+                }
+            }
+        }else if(round==6 && stageCounter==10){
+            print(stageCounter)
+            proceed(from: 6)
+        }else if(round==7 && stageCounter != 20){
+            let newItem = combined[stageCounter]
+            if(words.contains(newItem)){
+                setWord(word: newItem)
+            }else{
+                setImg(img: newItem)
+            }
+        }else if(round==7 && stageCounter==20){
+            print(t3Times,t4Times,t6Times,t7Times)
+            proceed(from: 7)
+        }
+
+        
+        
+    }
+    func proceed(from:Int){
+        if(from==1){
+            shuffleSets()
+            self.roundCounter+=1
+            self.stageCounter = 0
+            setWord(word: words[stageCounter])
+            self.btn1.setTitle("N", for: .normal)
+            self.btn2.setTitle("P", for: .normal)
+            self.prompt.text = "Press N if the word below seems negative and P if it seems positive"
+        }else if(from==2){
+            shuffleSets()
+            self.roundCounter+=1
+            self.stageCounter = 0
+            self.imgCount = 0
+            self.wordCount = 0
+            self.btn1.setTitle("1", for: .normal)
+            self.btn2.setTitle("2", for: .normal)
+            self.prompt.text = "Press 1 if the word below seems negative or the person seems African-American and 2 if it the word seems positive or if the person seems European-American."
+            if(wordState==0){
+                setImg(img: images[stageCounter])
+                self.imgCount+=1
+            }else{
+                setWord(word: words[stageCounter])
+                self.wordCount+=1
+            }
+            showAlert(msg: "This section of the test will be timed, press the button below whenever you're ready. Make sure you read the instructions above before pressing the button.", btnMsg: "Start the timer!")
+        }else if(from==3){
+            shuffleSets()
+            self.roundCounter+=1
+            self.stageCounter = 0
+            let item = combined[stageCounter]
+            if(words.contains(item)){
+                setWord(word: item)
+            }else{
+                setImg(img: item)
+            }
+            showAlert(msg: "This section of the test will also be timed, press the button below whenever you're ready", btnMsg: "Start the timer!")
+        }else if(from==4){
+            shuffleSets()
+            print(t4Times)
+            self.roundCounter+=1
             self.btn1.setTitle("E", for: .normal)
             self.btn2.setTitle("A", for: .normal)
-            alert.addAction(UIAlertAction(title: "Okay, proceed", style: UIAlertAction.Style.default, handler: { action in
-                self.start = Date()
-            }))
-            self.present(alert,animated: true)
-        }else{
-            if(state==0){ t4count_word+=1}
-            else {t4count_img+=1}
-            state = Int.random(in: 0...1)
-            if(state==0){
-                if(t4count_word>11){
-                    print("words-exhausted")
-                    state=1
-                }else{
-                    self.faceImg.isHidden = true
-                    self.wordLbl.isHidden = false
-                    self.wordLbl.text = words[t4count_word]
-                }
-            }else if(state==1){
-                if(t4count_img>11){
-                    print("imgs-exhausted")
-                    print("t4over")
-                    print(t4Times)
-                    let alert = UIAlertController(title: "Alert", message: "This round will consist of classifying faces into one of two categories, like in the first stage. Be careful, the positions of the buttons have now been swapped.", preferredStyle: .alert)
-                    self.prompt.text = "Press A if the person seems African-American or E if they seem European-American"
-                    self.round = 5
-                    self.wordLbl.isHidden = true
-                    self.faceImg.isHidden = false
-                    self.btn1.setTitle("E", for: .normal)
-                    self.btn2.setTitle("A", for: .normal)
-                    alert.addAction(UIAlertAction(title: "Okay, proceed", style: UIAlertAction.Style.default, handler: { action in
-                        self.start = Date()
-                    }))
-                    self.present(alert,animated: true)
-                }else{
-                    self.faceImg.isHidden = false
-                    self.wordLbl.isHidden = true
-                    self.faceImg.image = UIImage(named: "faces/"+images[self.t4count_img]+"_nc.jpg")
-                }
-            }
-        }
-    }
-    func proceed5(){
-        t5count+=1
-        print("called")
-        if(t5count>11){
-            print("t5over")
-            self.round = 6
-            let alert = UIAlertController(title: "Alert", message: "Press N/A if the word below seems negative or if the face shown below looks African-American, or P/E if the word below seems positive or if the face shown below looks European-American. You will be timed! Be careful, the positions of the buttons have now been swapped.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Start the timer!", style: UIAlertAction.Style.default, handler: { action in
-                self.start = Date()
-            }))
-            self.btn1.setTitle("P/E", for: .normal)
-            self.btn2.setTitle("N/A", for: .normal)
-            self.present(alert,animated: true)
-            self.prompt.text = "Press N/A if the word below seems negative or if the face shown below looks African-American, or P/E if the word below seems positive or if the face shown below looks European-American."
-        }else{
-            self.faceImg.image = UIImage(named: "faces/"+images[self.t5count]+"_nc.jpg")
-        }
-    }
-    func proceed6(){
-        t6count+=1
-        state = Int.random(in: 0...1)
-        if(t6count>11){
-            print("t6over")
-            let alert = UIAlertController(title: "Alert", message: "This round is a repeat of the previous round, you will be timed!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Start the timer!", style: UIAlertAction.Style.default, handler: { action in
-                self.start = Date()
-            }))
-            self.present(alert,animated: true)
-            print(t6Times)
-            self.round = 7
-            if (self.state==0){
-                self.faceImg.isHidden = true
-                self.wordLbl.isHidden = false
-                self.wordLbl.text = words[t7count_word]
+            self.prompt.text = "Press A if the person seems African-American or E if they seem European-American"
+            showAlert(msg: "In the next section, you'll have to classify faces in the same manner as the first section, but with one catch: the position of the buttons will be changed. Be careful. This section will not be timed.", btnMsg: "Okay, understood.")
+            stageCounter = 0
+            setImg(img: images[stageCounter])
+        }else if(from==5){
+            shuffleSets()
+            self.roundCounter+=1
+            self.stageCounter = 0
+            self.imgCount = 0
+            self.wordCount = 0
+            self.btn1.setTitle("1", for: .normal)
+            self.btn2.setTitle("2", for: .normal)
+            self.prompt.text = "Press 1 if the word below seems positive or if the person seems European-American and 2 if  the word seems negative or the person seems African-American"
+            if(wordState==0){
+                setImg(img: images[stageCounter])
+                self.imgCount+=1
             }else{
-                self.faceImg.isHidden = false
-                self.wordLbl.isHidden = true
-                var initImg = images[t7count_img]
-                initImg = "faces/"+initImg+"_nc.jpg"
-                print(initImg)
-                faceImg.image = UIImage(named: initImg)
+                setWord(word: words[stageCounter])
+                self.wordCount+=1
             }
-        }else{
-            if(state==0){
-                self.faceImg.isHidden = true
-                self.wordLbl.isHidden = false
-                self.wordLbl.text = words[t6count]
+            showAlert(msg: "In the next section, you'll have to classify faces and words in the same manner as the 3rd section, but with one catch: the position of the buttons will be changed. Be careful. This section will be timed.", btnMsg: "Okay, understood.")
+        }else if(from==6){
+            shuffleSets()
+            self.roundCounter+=1
+            self.stageCounter = 0
+            self.imgCount=0
+            self.wordCount=0
+            if(wordState==0){
+                setImg(img: images[stageCounter])
+                self.imgCount+=1
             }else{
-                self.faceImg.isHidden = false
-                self.wordLbl.isHidden = true
-                self.faceImg.image = UIImage(named: "faces/"+images[self.t6count]+"_nc.jpg")
+                setWord(word: words[stageCounter])
+                self.wordCount+=1
             }
+            showAlert(msg: "The next section will also be timed.", btnMsg: "Okay, understood.")
+        }else if(from==7){
+            print("finished")
+            print(t3Times.count,t4Times.count,t6Times.count,t7Times.count)
+            res = calc(t3: t3Times, t4: t4Times, t6: t6Times, t7: t7Times)
+            self.performSegue(withIdentifier: "results", sender: nil)
+            
         }
+        
     }
-    func proceed7(){
-        print(t7count_word,t7count_img)
-        if(t7count_img>11||t7count_word>11){
-            print("t7over")
-            print(t7Times)
-            let alert = UIAlertController(title: "Alert", message: "Test over.", preferredStyle: .alert)
-            self.prompt.text = "Congratulations on finishing the test!"
-            self.round = 8
-            self.wordLbl.isHidden = true
-            self.faceImg.isHidden = true
-            self.btn1.isHidden = true
-            self.btn2.isHidden = true
-            alert.addAction(UIAlertAction(title: "Great!", style: UIAlertAction.Style.default, handler: { action in
-                print("performseguehere")
-            }))
-            self.present(alert,animated: true)
-        }else{
-            if(state==0){ t7count_word+=1}
-            else {t7count_img+=1}
-            state = Int.random(in: 0...1)
-            if(state==0){
-                if(t7count_word>11){
-                    print("words-exhausted")
-                    state=1
-                }else{
-                    self.faceImg.isHidden = true
-                    self.wordLbl.isHidden = false
-                    self.wordLbl.text = words[t7count_word]
-                }
-            }else if(state==1){
-                if(t7count_img>11){
-                    print("imgs-exhausted")
-                   print("t7over")
-                    print(t7Times)
-                    let alert = UIAlertController(title: "Alert", message: "Test over.", preferredStyle: .alert)
-                    self.prompt.text = "Congratulations on finishing the test!"
-                    self.round = 8
-                    self.wordLbl.isHidden = true
-                    self.faceImg.isHidden = true
-                    self.btn1.isHidden = true
-                    self.btn2.isHidden = true
-                    alert.addAction(UIAlertAction(title: "Great!", style: UIAlertAction.Style.default, handler: { action in
-                        print("performseguehere")
-                    }))
-                    self.present(alert,animated: true)
-                }else{
-                    self.faceImg.isHidden = false
-                    self.wordLbl.isHidden = true
-                    self.faceImg.image = UIImage(named: "faces/"+images[self.t7count_img]+"_nc.jpg")
-                }
-            }
-        }
+    func showAlert(msg:String,btnMsg:String){
+        let alert = UIAlertController(title: "Alert", message: msg, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: btnMsg, style: UIAlertAction.Style.default, handler: { action in
+            self.start = Date()
+        }))
+        self.present(alert, animated: true, completion: nil)
+    }
+    func shuffleSets(){
+        images = images.shuffled()
+        words = words.shuffled()
     }
 }
